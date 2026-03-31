@@ -1,3 +1,10 @@
+def write_to_file(title,content):
+    with open("outputs.txt", "a", encoding = "utf-8") as f:
+        f.write(f"\n{'='*50}\n")
+        f.write(f"{title}\n")
+        f.write(f"{'-'*50}\n")
+        f.write(str(content) + "\n")
+
 from transformers import pipeline
 print("TEXT CLASSIFICATION")
 print("Sentiment Analysis")
@@ -9,6 +16,8 @@ print("Input: ", text)
 print("Output: ", result)
 print()
 
+result = analyser(text)
+write_to_file("Sentiment Analysis", result)
 
 print("Topic Classification")
 classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
@@ -16,6 +25,9 @@ text = "Dhurandar part 2 was released recently and it has been getting great rev
 labels = ["politics","sports", "entertainment", "education" , "technology"]
 print(classifier(text, labels))
 
+
+zs_result = classifier(text, candidate_labels=labels)
+write_to_file("Topic Classification", zs_result)
 
 print("SUMMARIZATION")
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
@@ -26,9 +38,10 @@ to automate tasks and improve efficiency."""
 summary = summarizer(long_text, max_length =30, min_length= 10, do_sample=False)
 
 print("original Text: ", long_text)
-print("Summary: ", summary)
+print("Summary: ", summary[0]["summary_text"])
 print()
 
+write_to_file("Summarization", summary[0]["summary_text"])
 
 print("QUESTION ANSWERING")
 qna = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
@@ -43,5 +56,5 @@ print("Question: ", question)
 print("Answer: ", answer)
 print()
 
-
+write_to_file("Question Answering", answer["answer"])
 
